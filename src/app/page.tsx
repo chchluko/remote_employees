@@ -14,6 +14,7 @@ export default function RosterManager() {
   const [employeeIds, setEmployeeIds] = useState<string[]>([]);
   const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
   const [bulkAddInput, setBulkAddInput] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const addEmployee = () => {
     if (employeeId && !employeeIds.includes(employeeId)) {
@@ -44,34 +45,40 @@ export default function RosterManager() {
     setBulkAddInput("");
   };
 
+  const filteredEmployeeIds = employeeIds.filter(id =>
+    id.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+
+
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Roster Manager</h1>
+      <h1 className="text-2xl font-bold mb-4">Remote Manager</h1>
 
       <div className="flex flex-col md:flex-row gap-4 mb-4">
         <div className="flex items-center gap-2">
           <Input
             type="text"
-            placeholder="Employee ID"
+            placeholder="Número de Nómina"
             value={employeeId}
             onChange={(e) => setEmployeeId(e.target.value)}
           />
           <Button variant="secondary" onClick={addEmployee}>
             <Plus className="mr-2 h-4 w-4" />
-            Add Employee
+            Agregar Empleado
           </Button>
         </div>
 
         <div className="flex items-center gap-2">
           <Input
             type="text"
-            placeholder="Bulk Add (comma-separated)"
+            placeholder="Agregar múltiples empleados (Nóminas, separadas por comas)"
             value={bulkAddInput}
             onChange={(e) => setBulkAddInput(e.target.value)}
           />
           <Button variant="secondary" onClick={handleBulkAdd}>
             <Plus className="mr-2 h-4 w-4" />
-            Bulk Add
+            Agregar Múltiples
           </Button>
         </div>
       </div>
@@ -84,24 +91,34 @@ export default function RosterManager() {
           className={cn(selectedEmployeeIds.length === 0 && "cursor-not-allowed")}
         >
           <Trash className="mr-2 h-4 w-4" />
-          Remove Selected
+          Remover los seleccionados
         </Button>
       </div>
 
       <div className="mb-4">
-        <Badge>Employee Count: {employeeIds.length}</Badge>
+        <Badge>Número de Empleados: {employeeIds.length}</Badge>
+      </div>
+
+      <div className="mb-4">
+        <Input
+          type="text"
+          placeholder="Buscar por número de nómina"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
       </div>
 
       <Table>
-        <TableCaption>A list of employees on the roster.</TableCaption>
+
+        <TableCaption>Lista de Empleados</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[50px]">Select</TableHead>
-            <TableHead>Employee ID</TableHead>
+            <TableHead className="w-[50px]">Seleccionar</TableHead>
+            <TableHead>Número de Nómina</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {employeeIds.map(id => (
+          {filteredEmployeeIds.map(id => (
             <TableRow key={id}>
               <TableCell className="pl-6">
                 <Checkbox
@@ -112,9 +129,9 @@ export default function RosterManager() {
               <TableCell>{id}</TableCell>
             </TableRow>
           ))}
-          {employeeIds.length === 0 && (
+          {filteredEmployeeIds.length === 0 && (
             <TableRow>
-              <TableCell colSpan={2} className="text-center">No employees added yet.</TableCell>
+              <TableCell colSpan={2} className="text-center">No hay empleados agregados.</TableCell>
             </TableRow>
           )}
         </TableBody>
